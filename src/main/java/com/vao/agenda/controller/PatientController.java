@@ -15,5 +15,9 @@ public class PatientController {
     @Autowired
     private IPatientRepository iPatientRepository;
 
+    @GetMapping
+    public Iterable<Patient> list(){
+        return iPatientRepository.findAll();
+    }
 
 }
