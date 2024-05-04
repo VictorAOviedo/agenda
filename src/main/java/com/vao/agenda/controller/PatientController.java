@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +35,20 @@ public class PatientController {
     @PostMapping
     public Patient create(@RequestBody Patient patient){
         return iPatientRepository.save(patient);
+    }
+
+    @PutMapping("/{id}")
+    public Patient update(@PathVariable Integer id,
+                          @RequestBody Patient formP){
+        Patient patientFramDB = iPatientRepository
+                .findById(id)
+                .orElse(null);
+
+            patientFramDB.setName(formP.getName());
+            patientFramDB.setLastName(formP.getLastName());
+            patientFramDB.setPhone(formP.getPhone());
+
+        return iPatientRepository.save(patientFramDB);
     }
 
 }
