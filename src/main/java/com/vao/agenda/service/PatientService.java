@@ -18,26 +18,24 @@ public class PatientService {
         return iPatientRepository.findAll();
     }
 
-    public Optional<Patient> findById(Integer id) {
+    public Patient findById(Integer id) {
         return iPatientRepository
-                .findById(id);
+                .findById(id)
+                .orElse(null);
     }
 
     public Patient create(Patient patient){
         return iPatientRepository.save(patient);
     }
 
-    public Patient update(Integer id,
-                          Patient formP){
-        Patient patientFramDB = iPatientRepository
-                .findById(id)
-                .orElse(null);
+    public Patient update(Integer id, Patient formP){
+        Patient patientFromDB = findById(id);
 
-        patientFramDB.setName(formP.getName());
-        patientFramDB.setLastName(formP.getLastName());
-        patientFramDB.setPhone(formP.getPhone());
+        patientFromDB.setName(formP.getName());
+        patientFromDB.setLastName(formP.getLastName());
+        patientFromDB.setPhone(formP.getPhone());
 
-        return iPatientRepository.save(patientFramDB);
+        return iPatientRepository.save(patientFromDB);
     }
 
     public void delete (Integer id){

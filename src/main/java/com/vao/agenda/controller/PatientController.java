@@ -30,7 +30,7 @@ public class PatientController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Patient> get(@PathVariable Integer id) {
+    public Patient get(@PathVariable Integer id) {
         return patientService.findById(id);
     }
 
@@ -43,9 +43,6 @@ public class PatientController {
     @PutMapping("/{id}")
     public Patient update(@PathVariable Integer id,
                           @RequestBody Patient formP){
-        Patient patientFramDB = patientService
-                .findById(id)
-                .orElse(null);
 
         return patientService.update(id, formP);
     }
