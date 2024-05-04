@@ -3,6 +3,7 @@ package com.vao.agenda.controller;
 import com.vao.agenda.entity.Patient;
 import com.vao.agenda.repository.IPatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,5 +51,15 @@ public class PatientController {
 
         return iPatientRepository.save(patientFramDB);
     }
+
+    @DeleteMapping("/{id}")
+    public void delete (@PathVariable Integer id){
+        Patient patientfronDB = iPatientRepository
+                .findById(id)
+                .orElse(null);
+
+        iPatientRepository.delete(patientfronDB);
+    }
+
 
 }
