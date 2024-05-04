@@ -1,7 +1,7 @@
 package com.vao.agenda.controller;
 
 import com.vao.agenda.entity.Patient;
-import com.vao.agenda.repository.IPatientRepository;
+import com.vao.agenda.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,47 +22,38 @@ import java.util.Optional;
 public class PatientController {
 
     @Autowired
-    private IPatientRepository iPatientRepository;
+    private PatientService patientService;
 
     @GetMapping
     public Iterable<Patient> list(){
-        return iPatientRepository.findAll();
+        return patientService.findAll();
     }
 
     @GetMapping("/{id}")
     public Optional<Patient> get(@PathVariable Integer id) {
-        return iPatientRepository
-                .findById(id);
+        return patientService.findById(id);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Patient create(@RequestBody Patient patient){
-        return iPatientRepository.save(patient);
+        return patientService.create(patient);
     }
 
     @PutMapping("/{id}")
     public Patient update(@PathVariable Integer id,
                           @RequestBody Patient formP){
-        Patient patientFramDB = iPatientRepository
+        Patient patientFramDB = patientService
                 .findById(id)
                 .orElse(null);
 
-            patientFramDB.setName(formP.getName());
-            patientFramDB.setLastName(formP.getLastName());
-            patientFramDB.setPhone(formP.getPhone());
-
-        return iPatientRepository.save(patientFramDB);
+        return patientService.update(id, formP);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void delete (@PathVariable Integer id){
-        Patient patientfronDB = iPatientRepository
-                .findById(id)
-                .orElse(null);
-
-        iPatientRepository.delete(patientfronDB);
+        patientService.delete(id);
     }
 
 
