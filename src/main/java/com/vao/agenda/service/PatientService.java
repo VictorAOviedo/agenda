@@ -2,17 +2,18 @@ package com.vao.agenda.service;
 
 import com.vao.agenda.entity.Patient;
 import com.vao.agenda.repository.IPatientRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 import java.util.Optional;
 
+@AllArgsConstructor
 @Service
 public class PatientService {
 
-    @Autowired
-    private IPatientRepository iPatientRepository;
+    private final IPatientRepository iPatientRepository;
 
     public Iterable<Patient> findAll(){
         return iPatientRepository.findAll();

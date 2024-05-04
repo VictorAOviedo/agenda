@@ -2,6 +2,7 @@ package com.vao.agenda.controller;
 
 import com.vao.agenda.entity.Patient;
 import com.vao.agenda.service.PatientService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,13 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-
+@AllArgsConstructor
 @RequestMapping("/patient")
 @RestController
 public class PatientController {
 
-    @Autowired
-    private PatientService patientService;
+    private final PatientService patientService;
 
     @GetMapping
     public Iterable<Patient> list(){
