@@ -3,6 +3,7 @@ package com.vao.agenda.controller;
 import com.vao.agenda.entity.Patient;
 import com.vao.agenda.repository.IPatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
@@ -33,6 +35,7 @@ public class PatientController {
                 .findById(id);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Patient create(@RequestBody Patient patient){
         return iPatientRepository.save(patient);
@@ -52,6 +55,7 @@ public class PatientController {
         return iPatientRepository.save(patientFramDB);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void delete (@PathVariable Integer id){
         Patient patientfronDB = iPatientRepository
