@@ -26,5 +26,10 @@ public class Patient {
     @NonNull
     private String lastName;
     @NonNull
+    private Integer cod;
+    @NonNull
     private Integer phone;
+    @NonNull
+    private String email;
+
 }

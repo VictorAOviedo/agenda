@@ -20,9 +20,9 @@ public class AgendaApplication {
 	CommandLineRunner runner(IPatientRepository iPatientRepository) {
 		return args -> {
 			List<Patient> patients = Arrays.asList(
-					new Patient("Victor", "Oviedo", 351671555),
-					new Patient("Cecilia", "Janco", 35167155),
-					new Patient("Victoria", "Oviedo", 35167155)
+					new Patient("Victor", "Oviedo", 351, 351671555, "b@gmail.com"),
+					new Patient("Cecilia", "Janco", 11, 35167155, "a@gmail.com"),
+					new Patient("Victoria", "Oviedo", 388, 35167155, "anos@sasaasa.com")
 			);
 			iPatientRepository.saveAll(patients);
 		};

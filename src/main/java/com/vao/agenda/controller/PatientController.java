@@ -1,10 +1,12 @@
 package com.vao.agenda.controller;
 
+import com.vao.agenda.dto.PatientDTO;
 import com.vao.agenda.entity.Patient;
 import com.vao.agenda.service.PatientService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
+@CrossOrigin
 @AllArgsConstructor
 @RequestMapping("/patient")
 @RestController
@@ -36,15 +39,15 @@ public class PatientController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Patient create(@RequestBody Patient patient){
-        return patientService.create(patient);
+    public Patient create(@RequestBody PatientDTO patientDTO){
+        return patientService.create(patientDTO);
     }
 
     @PutMapping("/{id}")
     public Patient update(@PathVariable Integer id,
-                          @RequestBody Patient formP){
+                          @RequestBody PatientDTO patientDTO){
 
-        return patientService.update(id, formP);
+        return patientService.update(id, patientDTO);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
