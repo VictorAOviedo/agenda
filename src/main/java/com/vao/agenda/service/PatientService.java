@@ -2,11 +2,13 @@ package com.vao.agenda.service;
 
 import com.vao.agenda.dto.PatientDTO;
 import com.vao.agenda.entity.Patient;
+import com.vao.agenda.exception.ResourceNotFoudException;
 import com.vao.agenda.repository.IPatientRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-
+import java.util.Optional;
 
 
 @AllArgsConstructor
@@ -22,8 +24,9 @@ public class PatientService {
     public Patient findById(Integer id) {
         return iPatientRepository
                 .findById(id)
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoudException());
     }
+
 
     public Patient create(PatientDTO patientDTO){
         Patient patient = new Patient();
