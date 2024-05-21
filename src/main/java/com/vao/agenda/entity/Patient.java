@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -31,5 +32,15 @@ public class Patient {
     private Integer phone;
     @NonNull
     private String email;
+
+
+//    public void setPhone( Integer phone) {
+//        String phoneStr = phone.toString();
+//        if (phoneStr.length() < 6 || phoneStr.length() > 8) {
+//            throw new RuntimeException("El número de teléfono debe tener entre 6 y 8 dígitos.");
+//        }
+//
+//        this.phone = phone;
+//    }
 
 }
