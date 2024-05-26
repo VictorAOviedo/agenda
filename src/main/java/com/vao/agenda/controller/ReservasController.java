@@ -3,12 +3,14 @@ package com.vao.agenda.controller;
 
 import com.vao.agenda.dto.HorariosDTO;
 import com.vao.agenda.entity.Local;
+import com.vao.agenda.entity.Reserva;
 import com.vao.agenda.entity.Tratamiento;
 import com.vao.agenda.service.ReservasService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,5 +39,10 @@ public class ReservasController {
     @GetMapping("/horarios")
     public HorariosDTO getHorarios(@RequestParam String local, @RequestParam String tratamiento) {
         return reservasService.getHorarios(local, tratamiento);
+    }
+
+    @PostMapping("/reservas")
+    public Reserva createReserva(@RequestParam String local, @RequestParam String tratamiento, @RequestParam String fechaHora) {
+        return reservasService.createReserva(local, tratamiento, fechaHora);
     }
 }
