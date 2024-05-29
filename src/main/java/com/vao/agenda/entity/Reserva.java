@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.NonNull;
 
 import java.time.LocalDateTime;
 
@@ -14,9 +15,22 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NonNull
     private String local;
+    @NonNull
     private String tratamiento;
+    @NonNull
     private LocalDateTime fechaHora;
+
+    public Reserva() {
+    }
+
+    public Reserva(Long id, @NonNull String local, @NonNull String tratamiento, @NonNull LocalDateTime fechaHora) {
+        this.id = id;
+        this.local = local;
+        this.tratamiento = tratamiento;
+        this.fechaHora = fechaHora;
+    }
 
     // Getters y Setters
 

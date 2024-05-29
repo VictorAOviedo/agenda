@@ -2,18 +2,20 @@ package com.vao.agenda.dto;
 
 import java.util.List;
 
-public class HorariosDTO {
+public class ReservaDTO {
     private String local;
     private String tratamiento;
-    private List<String> horarios;
+    private List<String> fechaHora;
+
+
 
     // Constructor, getters y setters
-    public HorariosDTO() {}
+    public ReservaDTO() {}
 
-    public HorariosDTO(String local, String tratamiento, List<String> horarios) {
+    public ReservaDTO(String local, String tratamiento, List<String> fechaHora) {
         this.local = local;
         this.tratamiento = tratamiento;
-        this.horarios = horarios;
+        this.fechaHora = fechaHora;
     }
 
     public String getLocal() {
@@ -32,12 +34,12 @@ public class HorariosDTO {
         this.tratamiento = tratamiento;
     }
 
-    public List<String> getHorarios() {
-        return horarios;
+    public List<String> getFechaHora() {
+        return fechaHora;
     }
 
-    public void setHorarios(List<String> horarios) {
-        this.horarios = horarios;
+    public void setFechaHora(List<String> fechaHora) {
+        this.fechaHora = fechaHora;
     }
 }
 

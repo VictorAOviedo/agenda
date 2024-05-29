@@ -1,6 +1,6 @@
 package com.vao.agenda.service;
 
-import com.vao.agenda.dto.HorariosDTO;
+import com.vao.agenda.dto.ReservaDTO;
 import com.vao.agenda.entity.Local;
 import com.vao.agenda.entity.Reserva;
 import com.vao.agenda.entity.Tratamiento;
@@ -10,16 +10,16 @@ import com.vao.agenda.repository.TratamientoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class ReservasService {
+public class ReservaService {
 
     @Autowired
     private TratamientoRepository tratamientoRepository;
@@ -41,7 +41,14 @@ public class ReservasService {
     }
 
 
-    public HorariosDTO getHorarios(String localName, String tratamientoName) {
+
+
+    public Iterable<Reserva> findAll(){
+        return reservaRepository.findAll();
+    }
+
+
+    public ReservaDTO getHorarios(String localName, String tratamientoName) {
         Tratamiento tratamientoSeleccionado = tratamientoRepository.findAll().stream()
                 .filter(t -> t.getNombre().equals(tratamientoName))
                 .findFirst().orElse(null);
@@ -51,7 +58,7 @@ public class ReservasService {
                 .findFirst().orElse(null);
 
         if (tratamientoSeleccionado == null || localSeleccionado == null) {
-            return new HorariosDTO(localName, tratamientoName, Collections.emptyList());
+            return new ReservaDTO(localName, tratamientoName, Collections.emptyList());
         }
 
         List<String> horariosDisponibles = new ArrayList<>();
@@ -83,7 +90,7 @@ public class ReservasService {
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
 
-        return new HorariosDTO(localName, tratamientoName, horariosDisponibles);
+        return new ReservaDTO(localName, tratamientoName, horariosDisponibles);
     }
 
     public Reserva createReserva(String local, String tratamiento, String fechaHora) {
@@ -96,6 +103,34 @@ public class ReservasService {
         reserva.setFechaHora(dateTime);
 
         return reservaRepository.save(reserva);
+    }
+
+
+    public Reserva update(Long id, String local, String tratamiento, String fechaHora) {
+        Optional<Reserva> optionalReserva = reservaRepository.findById(id);
+
+        if (optionalReserva.isPresent()) {
+            Reserva reserva = optionalReserva.get();
+            reserva.setLocal(local);
+            reserva.setTratamiento(tratamiento);
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
+            LocalDateTime dateTime = LocalDateTime.parse(fechaHora, formatter);
+            reserva.setFechaHora(dateTime);
+
+            return reservaRepository.save(reserva);
+        } else {
+            throw new RuntimeException("Reserva no encontrada");
+        }
+    }
+
+
+    public void delete (Integer id){
+        Reserva reservafromDB = reservaRepository
+                .findById(Long.valueOf(id))
+                .orElse(null);
+
+        reservaRepository.delete(reservafromDB);
     }
 
 }
