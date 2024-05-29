@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.NonNull;
 
 import java.util.List;
 
@@ -15,8 +16,9 @@ public class Local {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NonNull
     private String nombre;
-
+    @NonNull
     @ElementCollection
     private List<Integer> diasDisponibles; // Lunes=2, Martes=3, ..., Domingo=1
 
