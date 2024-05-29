@@ -54,7 +54,7 @@ public class ReservasController {
 
     @PostMapping("/reservas")
     public Reserva create(@RequestParam String local, @RequestParam String tratamiento, @RequestParam String fechaHora) {
-        return reservaService.createReserva(local, tratamiento, fechaHora);
+        return reservaService.create(local, tratamiento, fechaHora);
     }
 
     @PutMapping("/reservas/{id}")
@@ -72,6 +72,5 @@ public class ReservasController {
     public void delete (@PathVariable Integer id){
         reservaService.delete(id);
     }
-
 
 }

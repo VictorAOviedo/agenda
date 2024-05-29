@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
 import java.util.List;
 
 
@@ -15,5 +16,5 @@ public class LocalDTO {
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
     @NotNull(message = "Los dias disponibles son obligatorio")
-    private List<Integer> diasDisponibles;
+    private List<DayOfWeek> diasDisponibles;
 }

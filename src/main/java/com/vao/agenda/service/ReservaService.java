@@ -9,14 +9,16 @@ import com.vao.agenda.repository.ReservaRepository;
 import com.vao.agenda.repository.TratamientoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReservaService {
@@ -41,8 +43,6 @@ public class ReservaService {
     }
 
 
-
-
     public Iterable<Reserva> findAll(){
         return reservaRepository.findAll();
     }
@@ -61,67 +61,87 @@ public class ReservaService {
             return new ReservaDTO(localName, tratamientoName, Collections.emptyList());
         }
 
+        List<DayOfWeek> diasDisponibles = localSeleccionado.getDiasDisponibles();
         List<String> horariosDisponibles = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, 1); // Empezar desde mañana
-
-        Calendar fin = Calendar.getInstance();
-        fin.add(Calendar.MONTH, 3); // Hasta tres meses desde hoy
-
-        //SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd/MM/yyyy");
-
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
-
         int duracion = tratamientoSeleccionado.getDuracion(); // Duración en minutos
 
+        LocalDate currentDate = LocalDate.now().plusDays(1); // Empezar desde mañana
+        LocalDate endDate = LocalDate.now().plusMonths(3); // Hasta tres meses desde hoy
 
-        while (calendar.before(fin)) {
-            if (localSeleccionado.getDiasDisponibles().contains(calendar.get(Calendar.DAY_OF_WEEK))) {
-                //String fecha = sdf.format(calendar.getTime());
-                LocalDateTime startTime = LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()).withHour(9).withMinute(0);
-                LocalDateTime endTime = LocalDateTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId()).withHour(19).withMinute(0);
-                //horariosDisponibles.add(fecha);
+        while (!currentDate.isAfter(endDate)) {
+            if (diasDisponibles.contains(currentDate.getDayOfWeek())) {
+                LocalDateTime startTime = currentDate.atTime(9, 0);
+                LocalDateTime endTime = currentDate.atTime(19, 0);
 
                 while (startTime.plusMinutes(duracion).isBefore(endTime)) {
                     horariosDisponibles.add(startTime.format(dateTimeFormatter));
                     startTime = startTime.plusMinutes(duracion);
                 }
             }
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            currentDate = currentDate.plusDays(1);
         }
 
         return new ReservaDTO(localName, tratamientoName, horariosDisponibles);
     }
 
-    public Reserva createReserva(String local, String tratamiento, String fechaHora) {
+
+    private boolean isDateTimeValidForLocal(Local local, LocalDateTime dateTime) {
+        DayOfWeek dayOfWeek = dateTime.getDayOfWeek();
+        return local.getDiasDisponibles().contains(dayOfWeek);
+    }
+
+    @Transactional
+    public Reserva create(String localName, String tratamientoName, String fechaHora) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
         LocalDateTime dateTime = LocalDateTime.parse(fechaHora, formatter);
 
+        Local local = localRepository.findAll().stream()
+                .filter(l -> l.getNombre().equals(localName))
+                .findFirst().orElseThrow(() -> new RuntimeException("Local no encontrado"));
+
+        Tratamiento tratamiento = tratamientoRepository.findAll().stream()
+                .filter(t -> t.getNombre().equals(tratamientoName))
+                .findFirst().orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
+
+        if (!isDateTimeValidForLocal(local, dateTime)) {
+            throw new RuntimeException("La fecha y hora no son válidas para los días disponibles del local");
+        }
+
         Reserva reserva = new Reserva();
-        reserva.setLocal(local);
-        reserva.setTratamiento(tratamiento);
+        reserva.setLocal(localName);
+        reserva.setTratamiento(tratamientoName);
         reserva.setFechaHora(dateTime);
 
         return reservaRepository.save(reserva);
     }
 
 
-    public Reserva update(Long id, String local, String tratamiento, String fechaHora) {
-        Optional<Reserva> optionalReserva = reservaRepository.findById(id);
+    @Transactional
+    public Reserva update(Long id, String localName, String tratamientoName, String fechaHora) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
+        LocalDateTime dateTime = LocalDateTime.parse(fechaHora, formatter);
 
-        if (optionalReserva.isPresent()) {
-            Reserva reserva = optionalReserva.get();
-            reserva.setLocal(local);
-            reserva.setTratamiento(tratamiento);
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
-            LocalDateTime dateTime = LocalDateTime.parse(fechaHora, formatter);
-            reserva.setFechaHora(dateTime);
+        Local local = localRepository.findAll().stream()
+                .filter(l -> l.getNombre().equals(localName))
+                .findFirst().orElseThrow(() -> new RuntimeException("Local no encontrado"));
 
-            return reservaRepository.save(reserva);
-        } else {
-            throw new RuntimeException("Reserva no encontrada");
+        Tratamiento tratamiento = tratamientoRepository.findAll().stream()
+                .filter(t -> t.getNombre().equals(tratamientoName))
+                .findFirst().orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
+
+        if (!isDateTimeValidForLocal(local, dateTime)) {
+            throw new RuntimeException("La fecha y hora no son válidas para los días disponibles del local");
         }
+
+        reserva.setLocal(localName);
+        reserva.setTratamiento(tratamientoName);
+        reserva.setFechaHora(dateTime);
+
+        return reservaRepository.save(reserva);
     }
 
 

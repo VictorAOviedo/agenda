@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.NonNull;
 
+import java.time.DayOfWeek;
 import java.util.List;
 
 @Entity
@@ -20,13 +21,13 @@ public class Local {
     private String nombre;
     @NonNull
     @ElementCollection
-    private List<Integer> diasDisponibles; // Lunes=2, Martes=3, ..., Domingo=1
+    private List<DayOfWeek> diasDisponibles; // Lunes=2, Martes=3, ..., Domingo=1
 
 
     // Constructor, getters y setters
     public Local() {}
 
-    public Local(String nombre, List<Integer> diasDisponibles) {
+    public Local(String nombre, List<DayOfWeek> diasDisponibles) {
         this.nombre = nombre;
         this.diasDisponibles = diasDisponibles;
     }
@@ -47,11 +48,11 @@ public class Local {
         this.nombre = nombre;
     }
 
-    public List<Integer> getDiasDisponibles() {
+    public List<DayOfWeek> getDiasDisponibles() {
         return diasDisponibles;
     }
 
-    public void setDiasDisponibles(List<Integer> diasDisponibles) {
+    public void setDiasDisponibles(List<DayOfWeek> diasDisponibles) {
         this.diasDisponibles = diasDisponibles;
     }
 }
