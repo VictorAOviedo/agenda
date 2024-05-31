@@ -11,6 +11,6 @@ import lombok.Setter;
 public class TratamientoDTO {
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
-    @NotNull(message = "El duración es obligatoria (numero en minutos")
+    @NotNull(message = "La duración del tratamiento es obligatoria (numero en minutos")
     private int duracion;
 }

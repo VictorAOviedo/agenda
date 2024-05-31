@@ -5,10 +5,8 @@ import com.vao.agenda.entity.Patient;
 import com.vao.agenda.exception.ResourceNotFoudException;
 import com.vao.agenda.repository.IPatientRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 
 @AllArgsConstructor
@@ -23,7 +21,7 @@ public class PatientService {
 
     public Patient findById(Integer id) {
         return iPatientRepository
-                .findById(id)
+                .findById(Long.valueOf(id))
                 .orElseThrow(() -> new ResourceNotFoudException());
     }
 
@@ -54,7 +52,7 @@ public class PatientService {
 
     public void delete (Integer id){
         Patient patientfromDB = iPatientRepository
-                .findById(id)
+                .findById(Long.valueOf(id))
                 .orElse(null);
 
         iPatientRepository.delete(patientfromDB);

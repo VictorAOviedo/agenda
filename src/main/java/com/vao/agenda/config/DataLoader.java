@@ -29,8 +29,8 @@
 //        tratamientoRepository.saveAll(Arrays.asList(consulta, extraccion, ortodoncia));
 //
 //        // Insertar locales
-//        Local local1 = new Local("LOCAL 1", Arrays.asList(3, 6)); // Martes y Viernes
-//        Local local2 = new Local("LOCAL 2", Arrays.asList(4, 5)); // Miércoles y Jueves
+//        Local local1 = new Local("LOCAL 1", Arrays.asList(1, 4)); // Martes y Viernes
+//        Local local2 = new Local("LOCAL 2", Arrays.asList(2, 3)); // Miércoles y Jueves
 //
 //        localRepository.saveAll(Arrays.asList(local1, local2));
 //    }

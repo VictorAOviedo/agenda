@@ -1,7 +1,6 @@
 package com.vao.agenda.service;
 
 import com.vao.agenda.dto.TratamientoDTO;
-import com.vao.agenda.entity.Patient;
 import com.vao.agenda.entity.Tratamiento;
 import com.vao.agenda.exception.ResourceNotFoudException;
 import com.vao.agenda.repository.TratamientoRepository;

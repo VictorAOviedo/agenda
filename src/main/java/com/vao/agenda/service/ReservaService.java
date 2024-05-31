@@ -2,8 +2,11 @@ package com.vao.agenda.service;
 
 import com.vao.agenda.dto.ReservaDTO;
 import com.vao.agenda.entity.Local;
+import com.vao.agenda.entity.Patient;
 import com.vao.agenda.entity.Reserva;
 import com.vao.agenda.entity.Tratamiento;
+import com.vao.agenda.exception.ResourceNotFoudException;
+import com.vao.agenda.repository.IPatientRepository;
 import com.vao.agenda.repository.LocalRepository;
 import com.vao.agenda.repository.ReservaRepository;
 import com.vao.agenda.repository.TratamientoRepository;
@@ -32,11 +35,17 @@ public class ReservaService {
     @Autowired
     private ReservaRepository reservaRepository;
 
+    @Autowired
+    private IPatientRepository patientRepository;
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
+
 
     public List<Tratamiento> getTratamientos() {
 
         return tratamientoRepository.findAll();
     }
+
 
     public List<Local> getLocales() {
         return localRepository.findAll();
@@ -47,27 +56,27 @@ public class ReservaService {
         return reservaRepository.findAll();
     }
 
+    public Reserva findById(Integer id) {
+        return reservaRepository
+                .findById(Long.valueOf(id))
+                .orElseThrow(() -> new ResourceNotFoudException());
+    }
 
     public ReservaDTO getHorarios(String localName, String tratamientoName) {
-        Tratamiento tratamientoSeleccionado = tratamientoRepository.findAll().stream()
-                .filter(t -> t.getNombre().equals(tratamientoName))
-                .findFirst().orElse(null);
-
-        Local localSeleccionado = localRepository.findAll().stream()
-                .filter(l -> l.getNombre().equals(localName))
-                .findFirst().orElse(null);
+        Tratamiento tratamientoSeleccionado = tratamientoRepository.findByNombre(tratamientoName);
+        Local localSeleccionado = localRepository.findByNombre(localName);
 
         if (tratamientoSeleccionado == null || localSeleccionado == null) {
-            return new ReservaDTO(localName, tratamientoName, Collections.emptyList());
+            return new ReservaDTO(localName, tratamientoName, Collections.emptyList(), null);
         }
 
         List<DayOfWeek> diasDisponibles = localSeleccionado.getDiasDisponibles();
         List<String> horariosDisponibles = new ArrayList<>();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
-        int duracion = tratamientoSeleccionado.getDuracion(); // Duración en minutos
+        int duracion = tratamientoSeleccionado.getDuracion();
 
-        LocalDate currentDate = LocalDate.now().plusDays(1); // Empezar desde mañana
-        LocalDate endDate = LocalDate.now().plusMonths(3); // Hasta tres meses desde hoy
+        LocalDate currentDate = LocalDate.now().plusDays(1);
+        LocalDate endDate = LocalDate.now().plusMonths(3);
 
         while (!currentDate.isAfter(endDate)) {
             if (diasDisponibles.contains(currentDate.getDayOfWeek())) {
@@ -82,7 +91,7 @@ public class ReservaService {
             currentDate = currentDate.plusDays(1);
         }
 
-        return new ReservaDTO(localName, tratamientoName, horariosDisponibles);
+        return new ReservaDTO(localName, tratamientoName, horariosDisponibles, null);
     }
 
 
@@ -91,66 +100,60 @@ public class ReservaService {
         return local.getDiasDisponibles().contains(dayOfWeek);
     }
 
+
     @Transactional
-    public Reserva create(String localName, String tratamientoName, String fechaHora) {
+    public Reserva create(ReservaDTO reservaDTO) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
-        LocalDateTime dateTime = LocalDateTime.parse(fechaHora, formatter);
+        LocalDateTime dateTime = LocalDateTime.parse(reservaDTO.getFechaHora().get(0), formatter);
 
-        Local local = localRepository.findAll().stream()
-                .filter(l -> l.getNombre().equals(localName))
-                .findFirst().orElseThrow(() -> new RuntimeException("Local no encontrado"));
-
-        Tratamiento tratamiento = tratamientoRepository.findAll().stream()
-                .filter(t -> t.getNombre().equals(tratamientoName))
-                .findFirst().orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
+        Local local = localRepository.findByNombre(reservaDTO.getLocal());
+        Tratamiento tratamiento = tratamientoRepository.findByNombre(reservaDTO.getTratamiento());
+        Patient patient = patientRepository.findById(reservaDTO.getPatientId())
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
         if (!isDateTimeValidForLocal(local, dateTime)) {
             throw new RuntimeException("La fecha y hora no son válidas para los días disponibles del local");
         }
 
         Reserva reserva = new Reserva();
-        reserva.setLocal(localName);
-        reserva.setTratamiento(tratamientoName);
+        reserva.setLocal(reservaDTO.getLocal());
+        reserva.setTratamiento(reservaDTO.getTratamiento());
         reserva.setFechaHora(dateTime);
+        reserva.setPatient(patient);
 
         return reservaRepository.save(reserva);
     }
 
-
     @Transactional
-    public Reserva update(Long id, String localName, String tratamientoName, String fechaHora) {
+    public Reserva update(Long id, ReservaDTO reservaDTO) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
-        LocalDateTime dateTime = LocalDateTime.parse(fechaHora, formatter);
+        LocalDateTime dateTime = LocalDateTime.parse(reservaDTO.getFechaHora().get(0), formatter);
 
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
 
-        Local local = localRepository.findAll().stream()
-                .filter(l -> l.getNombre().equals(localName))
-                .findFirst().orElseThrow(() -> new RuntimeException("Local no encontrado"));
-
-        Tratamiento tratamiento = tratamientoRepository.findAll().stream()
-                .filter(t -> t.getNombre().equals(tratamientoName))
-                .findFirst().orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
+        Local local = localRepository.findByNombre(reservaDTO.getLocal());
+        Tratamiento tratamiento = tratamientoRepository.findByNombre(reservaDTO.getTratamiento());
+        Patient patient = patientRepository.findById(reservaDTO.getPatientId())
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
         if (!isDateTimeValidForLocal(local, dateTime)) {
             throw new RuntimeException("La fecha y hora no son válidas para los días disponibles del local");
         }
 
-        reserva.setLocal(localName);
-        reserva.setTratamiento(tratamientoName);
+        reserva.setLocal(reservaDTO.getLocal());
+        reserva.setTratamiento(reservaDTO.getTratamiento());
         reserva.setFechaHora(dateTime);
+        reserva.setPatient(patient);
 
         return reservaRepository.save(reserva);
     }
 
-
-    public void delete (Integer id){
-        Reserva reservafromDB = reservaRepository
-                .findById(Long.valueOf(id))
-                .orElse(null);
-
-        reservaRepository.delete(reservafromDB);
+    public void delete(Long id) {
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+        reservaRepository.delete(reserva);
     }
+
 
 }

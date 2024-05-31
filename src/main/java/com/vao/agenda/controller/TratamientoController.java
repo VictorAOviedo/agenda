@@ -55,5 +55,4 @@ public class TratamientoController {
         tratamientoService.delete(id);
     }
 
-
 }

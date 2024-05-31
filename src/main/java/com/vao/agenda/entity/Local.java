@@ -1,7 +1,5 @@
 package com.vao.agenda.entity;
 
-
-
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +19,7 @@ public class Local {
     private String nombre;
     @NonNull
     @ElementCollection
-    private List<DayOfWeek> diasDisponibles; // Lunes=2, Martes=3, ..., Domingo=1
+    private List<DayOfWeek> diasDisponibles; // Lunes=0 || MONDAY,..., Domingo=6 || SUNDAY
 
 
     // Constructor, getters y setters

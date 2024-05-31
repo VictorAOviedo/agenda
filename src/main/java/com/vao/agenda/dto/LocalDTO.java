@@ -1,6 +1,6 @@
 package com.vao.agenda.dto;
 
-import jakarta.persistence.ElementCollection;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

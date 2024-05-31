@@ -36,14 +36,12 @@ public class LocalController {
         return localService.findById(id);
     }
 
-
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Local create(@Validated @RequestBody LocalDTO localDTO){
 
         return localService.create(localDTO);
     }
-
 
     @PutMapping("/{id}")
     public Local update(@PathVariable Integer id,

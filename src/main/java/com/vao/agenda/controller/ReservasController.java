@@ -3,7 +3,6 @@ package com.vao.agenda.controller;
 
 import com.vao.agenda.dto.ReservaDTO;
 import com.vao.agenda.entity.Local;
-import com.vao.agenda.entity.Patient;
 import com.vao.agenda.entity.Reserva;
 import com.vao.agenda.entity.Tratamiento;
 import com.vao.agenda.service.ReservaService;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -37,6 +37,11 @@ public class ReservasController {
         return reservaService.findAll();
     }
 
+    @GetMapping("/reservas/{id}")
+    public Reserva get(@PathVariable Integer id) {
+        return reservaService.findById(id);
+    }
+
     @GetMapping("/tratamientos")
     public List<Tratamiento> getTratamientos() {
         return reservaService.getTratamientos();
@@ -53,23 +58,19 @@ public class ReservasController {
     }
 
     @PostMapping("/reservas")
-    public Reserva create(@RequestParam String local, @RequestParam String tratamiento, @RequestParam String fechaHora) {
-        return reservaService.create(local, tratamiento, fechaHora);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Reserva create(@RequestBody ReservaDTO reservaDTO) {
+        return reservaService.create(reservaDTO);
     }
 
     @PutMapping("/reservas/{id}")
-    public Reserva update(
-            @PathVariable Long id,
-            @RequestParam String local,
-            @RequestParam String tratamiento,
-            @RequestParam String fechaHora
-    ) {
-        return reservaService.update(id, local, tratamiento, fechaHora);
+    public Reserva update(@PathVariable Long id, @RequestBody ReservaDTO reservaDTO) {
+        return reservaService.update(id, reservaDTO);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("reservas/{id}")
-    public void delete (@PathVariable Integer id){
+    public void delete(@PathVariable Long id) {
         reservaService.delete(id);
     }
 

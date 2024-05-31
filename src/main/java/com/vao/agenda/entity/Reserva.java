@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.NonNull;
 
 import java.time.LocalDateTime;
@@ -22,14 +24,19 @@ public class Reserva {
     @NonNull
     private LocalDateTime fechaHora;
 
+    @ManyToOne
+    @JoinColumn(name = "patient_id", nullable = false)
+    private Patient patient;
+
     public Reserva() {
     }
 
-    public Reserva(Long id, @NonNull String local, @NonNull String tratamiento, @NonNull LocalDateTime fechaHora) {
+    public Reserva(Long id, @NonNull String local, @NonNull String tratamiento, @NonNull LocalDateTime fechaHora, Patient patient) {
         this.id = id;
         this.local = local;
         this.tratamiento = tratamiento;
         this.fechaHora = fechaHora;
+        this.patient = patient;
     }
 
     // Getters y Setters
@@ -64,5 +71,13 @@ public class Reserva {
 
     public void setFechaHora(LocalDateTime fechaHora) {
         this.fechaHora = fechaHora;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 }

@@ -39,6 +39,7 @@ public class PatientController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Patient create(@Validated @RequestBody PatientDTO patientDTO){
+
         return patientService.create(patientDTO);
     }
 
@@ -54,6 +55,5 @@ public class PatientController {
     public void delete (@PathVariable Integer id){
         patientService.delete(id);
     }
-
 
 }

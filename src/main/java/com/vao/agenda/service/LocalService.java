@@ -30,7 +30,6 @@ public class LocalService {
         local.setNombre(localDTO.getNombre());
         local.setDiasDisponibles(localDTO.getDiasDisponibles());
 
-
         return localRepository.save(local);
     }
 
@@ -39,7 +38,6 @@ public class LocalService {
 
         localFromDB.setNombre(localDTO.getNombre());
         localFromDB.setDiasDisponibles(localDTO.getDiasDisponibles());
-
 
         return localRepository.save(localFromDB);
     }
