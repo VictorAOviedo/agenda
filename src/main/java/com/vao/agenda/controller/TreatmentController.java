@@ -1,8 +1,8 @@
 package com.vao.agenda.controller;
 
-import com.vao.agenda.dto.TratamientoDTO;
-import com.vao.agenda.entity.Tratamiento;
-import com.vao.agenda.service.TratamientoService;
+import com.vao.agenda.dto.TreatmentDTO;
+import com.vao.agenda.entity.Treatment;
+import com.vao.agenda.service.TreatmentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -20,39 +20,39 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @AllArgsConstructor
-@RequestMapping("/tratamiento")
+@RequestMapping("/treatment")
 @RestController
-public class TratamientoController {
+public class TreatmentController {
 
-    private final TratamientoService tratamientoService;
+    private final TreatmentService treatmentService;
 
     @GetMapping
-    public Iterable<Tratamiento> list(){
-        return tratamientoService.findAll();
+    public Iterable<Treatment> list(){
+        return treatmentService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Tratamiento get(@PathVariable Integer id) {
-        return tratamientoService.findById(id);
+    public Treatment get(@PathVariable Integer id) {
+        return treatmentService.findById(id);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Tratamiento create(@Validated @RequestBody TratamientoDTO tratamientoDTO){
-        return tratamientoService.create(tratamientoDTO);
+    public Treatment create(@Validated @RequestBody TreatmentDTO treatmentDTO){
+        return treatmentService.create(treatmentDTO);
     }
 
     @PutMapping("/{id}")
-    public Tratamiento update(@PathVariable Integer id,
-                          @Validated @RequestBody TratamientoDTO tratamientoDTO){
+    public Treatment update(@PathVariable Integer id,
+                            @Validated @RequestBody TreatmentDTO treatmentDTO){
 
-        return tratamientoService.update(id, tratamientoDTO);
+        return treatmentService.update(id, treatmentDTO);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void delete (@PathVariable Integer id){
-        tratamientoService.delete(id);
+        treatmentService.delete(id);
     }
 
 }

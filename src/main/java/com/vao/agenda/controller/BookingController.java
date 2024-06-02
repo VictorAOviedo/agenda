@@ -1,11 +1,9 @@
 package com.vao.agenda.controller;
 
 
-import com.vao.agenda.dto.ReservaDTO;
-import com.vao.agenda.entity.Local;
-import com.vao.agenda.entity.Reserva;
-import com.vao.agenda.entity.Tratamiento;
-import com.vao.agenda.service.ReservaService;
+import com.vao.agenda.dto.BookingDTO;
+import com.vao.agenda.entity.Booking;
+import com.vao.agenda.service.BookingService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,64 +24,54 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.List;
 
 @CrossOrigin
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api")
-public class ReservasController {
+public class BookingController {
 
     @Autowired
-    private ReservaService reservaService;
+    private BookingService bookingService;
 
-    @GetMapping("/reservas")
-    public Iterable<Reserva> list(){
-        return reservaService.findAll();
+    @GetMapping("/booking")
+    public Iterable<Booking> list(){
+        return bookingService.findAll();
     }
 
-    @GetMapping("/reservas/{id}")
-    public Reserva get(@PathVariable Integer id) {
-        return reservaService.findById(id);
+    @GetMapping("/booking/{id}")
+    public Booking get(@PathVariable Integer id) {
+        return bookingService.findById(id);
     }
 
-    @GetMapping("/tratamientos")
-    public List<Tratamiento> getTratamientos() {
-        return reservaService.getTratamientos();
+
+    @GetMapping("/schedules")
+    public BookingDTO getSchedules(@RequestParam String place, @RequestParam String treatment) {
+        return bookingService.getSchedules(place, treatment);
     }
 
-    @GetMapping("/locales")
-    public List<Local> getLocales() {
-        return reservaService.getLocales();
-    }
-
-    @GetMapping("/horarios")
-    public ReservaDTO getHorarios(@RequestParam String local, @RequestParam String tratamiento) {
-        return reservaService.getHorarios(local, tratamiento);
-    }
-
-    @PostMapping("/reservas")
+    @PostMapping("/booking")
     @ResponseStatus(HttpStatus.CREATED)
-    public Reserva create(@RequestBody ReservaDTO reservaDTO) {
-        return reservaService.create(reservaDTO);
+    public Booking create(@RequestBody BookingDTO bookingDTO) {
+        return bookingService.create(bookingDTO);
     }
 
-    @PutMapping("/reservas/{id}")
-    public Reserva update(@PathVariable Long id, @RequestBody ReservaDTO reservaDTO) {
-        return reservaService.update(id, reservaDTO);
+    @PutMapping("/booking/{id}")
+    public Booking update(@PathVariable Long id, @RequestBody BookingDTO bookingDTO) {
+        return bookingService.update(id, bookingDTO);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("reservas/{id}")
+    @DeleteMapping("booking/{id}")
     public void delete(@PathVariable Long id) {
-        reservaService.delete(id);
+        bookingService.delete(id);
     }
 
-    @GetMapping("/export-reservas")
-    public ResponseEntity<String> exportReservas(@RequestParam String date) {
+    @GetMapping("/export-booking")
+    public ResponseEntity<String> exportBooking(@RequestParam String date) {
         LocalDate localDate = LocalDate.parse(date);
         String filePath = "reservas_" + localDate.toString() + ".txt";
-        reservaService.exportReservasToFile(localDate, filePath);
+        bookingService.exportBookingToFile(localDate, filePath);
 
         Path path = Paths.get(filePath);
         if (Files.exists(path)) {

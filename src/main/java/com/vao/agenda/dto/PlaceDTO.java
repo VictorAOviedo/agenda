@@ -12,9 +12,9 @@ import java.util.List;
 
 @Getter
 @Setter
-public class LocalDTO {
+public class PlaceDTO {
     @NotBlank(message = "El nombre es obligatorio")
-    private String nombre;
+    private String name;
     @NotNull(message = "Los dias disponibles son obligatorio")
-    private List<DayOfWeek> diasDisponibles;
+    private List<DayOfWeek> availableDays;
 }

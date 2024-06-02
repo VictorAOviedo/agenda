@@ -8,21 +8,21 @@ import lombok.NonNull;
 
 
 @Entity
-public class Tratamiento {
+public class Treatment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NonNull
-    private String nombre;
+    private String name;
     @NonNull
-    private int duracion; // duración en minutos
+    private int duration; // duración en minutos
 
     // Constructor, getters y setters
-    public Tratamiento() {}
+    public Treatment() {}
 
-    public Tratamiento(String nombre, int duracion) {
-        this.nombre = nombre;
-        this.duracion = duracion;
+    public Treatment(String name, int duration) {
+        this.name = name;
+        this.duration = duration;
     }
 
     public Long getId() {
@@ -33,20 +33,20 @@ public class Tratamiento {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public int getDuracion() {
-        return duracion;
+    public int getDuration() {
+        return duration;
     }
 
-    public void setDuracion(int duracion) {
-        this.duracion = duracion;
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 }
 

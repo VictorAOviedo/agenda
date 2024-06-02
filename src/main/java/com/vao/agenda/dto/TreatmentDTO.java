@@ -8,9 +8,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TratamientoDTO {
+public class TreatmentDTO {
     @NotBlank(message = "El nombre es obligatorio")
-    private String nombre;
-    @NotNull(message = "La duración del tratamiento es obligatoria (numero en minutos")
-    private int duracion;
+    private String name;
+    @NotNull(message = "La duración del treatment es obligatoria (numero en minutos")
+    private int duration;
 }

@@ -1,9 +1,9 @@
 package com.vao.agenda.controller;
 
 
-import com.vao.agenda.dto.LocalDTO;
-import com.vao.agenda.entity.Local;
-import com.vao.agenda.service.LocalService;
+import com.vao.agenda.dto.PlaceDTO;
+import com.vao.agenda.entity.Place;
+import com.vao.agenda.service.PlaceService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -20,39 +20,39 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @AllArgsConstructor
-@RequestMapping("/local")
+@RequestMapping("/place")
 @RestController
-public class LocalController {
+public class PlaceController {
 
-    private final LocalService localService;
+    private final PlaceService placeService;
 
     @GetMapping
-    public Iterable<Local> list(){
-        return localService.findAll();
+    public Iterable<Place> list(){
+        return placeService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Local get(@PathVariable Integer id) {
-        return localService.findById(id);
+    public Place get(@PathVariable Integer id) {
+        return placeService.findById(id);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Local create(@Validated @RequestBody LocalDTO localDTO){
+    public Place create(@Validated @RequestBody PlaceDTO placeDTO){
 
-        return localService.create(localDTO);
+        return placeService.create(placeDTO);
     }
 
     @PutMapping("/{id}")
-    public Local update(@PathVariable Integer id,
-                          @Validated @RequestBody LocalDTO localDTO){
+    public Place update(@PathVariable Integer id,
+                        @Validated @RequestBody PlaceDTO placeDTO){
 
-        return localService.update(id, localDTO);
+        return placeService.update(id, placeDTO);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void delete (@PathVariable Integer id){
-        localService.delete(id);
+        placeService.delete(id);
     }
 }

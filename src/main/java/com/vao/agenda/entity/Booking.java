@@ -12,31 +12,31 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-public class Reserva implements Serializable {
+public class Booking implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NonNull
-    private String local;
+    private String place;
     @NonNull
-    private String tratamiento;
+    private String treatment;
     @NonNull
-    private LocalDateTime fechaHora;
+    private LocalDateTime dateHour;
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    public Reserva() {
+    public Booking() {
     }
 
-    public Reserva(Long id, @NonNull String local, @NonNull String tratamiento, @NonNull LocalDateTime fechaHora, Patient patient) {
+    public Booking(Long id, @NonNull String place, @NonNull String treatment, @NonNull LocalDateTime dateHour, Patient patient) {
         this.id = id;
-        this.local = local;
-        this.tratamiento = tratamiento;
-        this.fechaHora = fechaHora;
+        this.place = place;
+        this.treatment = treatment;
+        this.dateHour = dateHour;
         this.patient = patient;
     }
 
@@ -50,28 +50,28 @@ public class Reserva implements Serializable {
         this.id = id;
     }
 
-    public String getLocal() {
-        return local;
+    public String getPlace() {
+        return place;
     }
 
-    public void setLocal(String local) {
-        this.local = local;
+    public void setPlace(String place) {
+        this.place = place;
     }
 
-    public String getTratamiento() {
-        return tratamiento;
+    public String getTreatment() {
+        return treatment;
     }
 
-    public void setTratamiento(String tratamiento) {
-        this.tratamiento = tratamiento;
+    public void setTreatment(String treatment) {
+        this.treatment = treatment;
     }
 
-    public LocalDateTime getFechaHora() {
-        return fechaHora;
+    public LocalDateTime getDateHour() {
+        return dateHour;
     }
 
-    public void setFechaHora(LocalDateTime fechaHora) {
-        this.fechaHora = fechaHora;
+    public void setDateHour(LocalDateTime dateHour) {
+        this.dateHour = dateHour;
     }
 
     public Patient getPatient() {
@@ -86,10 +86,10 @@ public class Reserva implements Serializable {
     public String toString() {
         return "Reserva{" +
                 "id=" + id +
-                ", local='" + local + '\'' +
-                ", tratamiento='" + tratamiento + '\'' +
-                ", fechaHora=" + fechaHora + '\'' +
-                ", patient=" + patient +
+                ", lugar='" + place + '\'' +
+                ", tratamiento='" + treatment + '\'' +
+                ", fecha y hora=" + dateHour + '\'' +
+                ", paciente=" + patient +
                 '}';
     }
 }

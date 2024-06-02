@@ -67,7 +67,7 @@ public class SistemaReservas {
         int localElegidoIndex = scanner.nextInt() - 1;
         Local localElegido = locales.get(localElegidoIndex);
 
-        System.out.println("Seleccione un tratamiento:");
+        System.out.println("Seleccione un treatment:");
         for (int i = 0; i < tratamientos.size(); i++) {
             System.out.println((i + 1) + ". " + tratamientos.get(i).getNombre());
         }
@@ -79,7 +79,7 @@ public class SistemaReservas {
     }
 
     public static void mostrarHorariosDisponibles(Local local, Tratamiento tratamiento) {
-        System.out.println("Horarios disponibles para " + local.getNombre() + " y tratamiento de " + tratamiento.getNombre() + ":");
+        System.out.println("Horarios disponibles para " + local.getNombre() + " y treatment de " + tratamiento.getNombre() + ":");
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, 1); // Empezar desde mañana

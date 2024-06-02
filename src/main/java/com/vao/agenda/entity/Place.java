@@ -11,23 +11,23 @@ import java.time.DayOfWeek;
 import java.util.List;
 
 @Entity
-public class Local {
+public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NonNull
-    private String nombre;
+    private String name;
     @NonNull
     @ElementCollection
-    private List<DayOfWeek> diasDisponibles; // Lunes=0 || MONDAY,..., Domingo=6 || SUNDAY
+    private List<DayOfWeek> availableDays; // Lunes=0 || MONDAY,..., Domingo=6 || SUNDAY
 
 
     // Constructor, getters y setters
-    public Local() {}
+    public Place() {}
 
-    public Local(String nombre, List<DayOfWeek> diasDisponibles) {
-        this.nombre = nombre;
-        this.diasDisponibles = diasDisponibles;
+    public Place(String name, List<DayOfWeek> availableDays) {
+        this.name = name;
+        this.availableDays = availableDays;
     }
 
     public Long getId() {
@@ -38,20 +38,20 @@ public class Local {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public List<DayOfWeek> getDiasDisponibles() {
-        return diasDisponibles;
+    public List<DayOfWeek> getAvailableDays() {
+        return availableDays;
     }
 
-    public void setDiasDisponibles(List<DayOfWeek> diasDisponibles) {
-        this.diasDisponibles = diasDisponibles;
+    public void setAvailableDays(List<DayOfWeek> availableDays) {
+        this.availableDays = availableDays;
     }
 }
 
