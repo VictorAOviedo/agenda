@@ -15,9 +15,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -155,5 +163,34 @@ public class ReservaService {
         reservaRepository.delete(reserva);
     }
 
+    public void exportReservasToFile(LocalDate date, String filePath) {
+        LocalDateTime startDateTime = date.atStartOfDay();
+        LocalDateTime endDateTime = date.atTime(LocalTime.MAX);
+        List<Reserva> reservas = reservaRepository.findByFechaHoraBetween(startDateTime, endDateTime);
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filePath))) {
+            for (Reserva reserva : reservas) {
+                writer.write(reserva.toString());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void exportReservasToFileUsingSerialization(LocalDate date, String filePath) {
+        LocalDateTime startDateTime = date.atStartOfDay();
+        LocalDateTime endDateTime = date.atTime(LocalTime.MAX);
+        List<Reserva> reservas = reservaRepository.findByFechaHoraBetween(startDateTime, endDateTime);
+
+        try (OutputStream fileOut = new FileOutputStream(filePath);
+             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {
+            for (Reserva reserva : reservas) {
+                objectOut.writeObject(reserva);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

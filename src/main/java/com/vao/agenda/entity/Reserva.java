@@ -8,10 +8,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.NonNull;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-public class Reserva {
+public class Reserva implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -79,5 +80,16 @@ public class Reserva {
 
     public void setPatient(Patient patient) {
         this.patient = patient;
+    }
+
+    @Override
+    public String toString() {
+        return "Reserva{" +
+                "id=" + id +
+                ", local='" + local + '\'' +
+                ", tratamiento='" + tratamiento + '\'' +
+                ", fechaHora=" + fechaHora + '\'' +
+                ", patient=" + patient +
+                '}';
     }
 }

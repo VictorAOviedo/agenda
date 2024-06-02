@@ -10,6 +10,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -18,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Patient {
+public class Patient implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -33,5 +34,15 @@ public class Patient {
     private Integer phone;
     @NonNull
     private String email;
+
+
+    @Override
+    public String toString() {
+        return " {" +
+                "id=" + id +
+                ", nombre='" + lastName + " " + name + '\'' +
+                ", telefono='" + cod +" " + phone + '\'' +
+                '}';
+    }
 
 }

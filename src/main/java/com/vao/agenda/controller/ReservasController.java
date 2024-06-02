@@ -9,6 +9,7 @@ import com.vao.agenda.service.ReservaService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 
 @CrossOrigin
@@ -72,6 +77,20 @@ public class ReservasController {
     @DeleteMapping("reservas/{id}")
     public void delete(@PathVariable Long id) {
         reservaService.delete(id);
+    }
+
+    @GetMapping("/export-reservas")
+    public ResponseEntity<String> exportReservas(@RequestParam String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        String filePath = "reservas_" + localDate.toString() + ".txt";
+        reservaService.exportReservasToFile(localDate, filePath);
+
+        Path path = Paths.get(filePath);
+        if (Files.exists(path)) {
+            return ResponseEntity.ok("Reservas exportada a " + filePath);
+        } else {
+            return ResponseEntity.status(500).body("Error al exportar reservas");
+        }
     }
 
 }

@@ -10,14 +10,12 @@ import org.springframework.context.annotation.Bean;
 import java.util.Arrays;
 import java.util.List;
 
+
 @SpringBootApplication
 public class AgendaApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(AgendaApplication.class, args);}
-
-
-
 
 
 //	@Bean
