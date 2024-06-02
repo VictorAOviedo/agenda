@@ -2,6 +2,7 @@ package com.vao.agenda.service;
 
 import com.vao.agenda.dto.PatientDTO;
 import com.vao.agenda.entity.Patient;
+import com.vao.agenda.exception.NotFoundException;
 import com.vao.agenda.exception.ResourceNotFoudException;
 import com.vao.agenda.repository.IPatientRepository;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class PatientService {
     public Patient findById(Integer id) {
         return iPatientRepository
                 .findById(Long.valueOf(id))
-                .orElseThrow(() -> new ResourceNotFoudException());
+                .orElseThrow(() -> new NotFoundException("ID Paciente no encontrado"));
     }
 
 
@@ -53,7 +54,8 @@ public class PatientService {
     public void delete (Integer id){
         Patient patientfromDB = iPatientRepository
                 .findById(Long.valueOf(id))
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundException("ID Paciente no encontrado"));
+         //       .orElse(null);
 
         iPatientRepository.delete(patientfromDB);
     }

@@ -2,6 +2,7 @@ package com.vao.agenda.service;
 
 import com.vao.agenda.dto.PlaceDTO;
 import com.vao.agenda.entity.Place;
+import com.vao.agenda.exception.NotFoundException;
 import com.vao.agenda.exception.ResourceNotFoudException;
 import com.vao.agenda.repository.IPlaceRepository;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ public class PlaceService {
     public Place findById(Integer id) {
         return iPlaceRepository
                 .findById(Long.valueOf(id))
-                .orElseThrow(() -> new ResourceNotFoudException());
+                .orElseThrow(() -> new NotFoundException("ID Local no encontrado"));
     }
 
     public Place create(PlaceDTO placeDTO){
@@ -45,7 +46,7 @@ public class PlaceService {
     public void delete (Integer id){
         Place placeFromDB = iPlaceRepository
                 .findById(Long.valueOf(id))
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundException("ID Local no encontrado"));
 
         iPlaceRepository.delete(placeFromDB);
     }

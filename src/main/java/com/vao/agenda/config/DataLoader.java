@@ -1,18 +1,31 @@
-//package com.vao.agenda.config;
-//
-//import com.vao.agenda.entity.Local;
-//import com.vao.agenda.entity.Tratamiento;
-//import com.vao.agenda.repository.LocalRepository;
-//import com.vao.agenda.repository.TratamientoRepository;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.CommandLineRunner;
-//import org.springframework.stereotype.Component;
-//
-//import java.util.Arrays;
-//
+package com.vao.agenda.config;
+
+
+import com.vao.agenda.entity.Booking;
+import com.vao.agenda.entity.Patient;
+import com.vao.agenda.entity.Place;
+import com.vao.agenda.entity.Treatment;
+import com.vao.agenda.repository.IBookingRepository;
+import com.vao.agenda.repository.IPatientRepository;
+import com.vao.agenda.repository.IPlaceRepository;
+import com.vao.agenda.repository.ITreatmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import java.time.DayOfWeek;
+import java.util.Arrays;
+
+
 //@Component
 //public class DataLoader implements CommandLineRunner {
 //
+//
+//
+//}
+
+
+
 //    @Autowired
 //    private TratamientoRepository tratamientoRepository;
 //
@@ -34,4 +47,4 @@
 //
 //        localRepository.saveAll(Arrays.asList(local1, local2));
 //    }
-//}
+

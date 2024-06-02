@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,12 +53,12 @@ public class BookingController {
 
     @PostMapping("/booking")
     @ResponseStatus(HttpStatus.CREATED)
-    public Booking create(@RequestBody BookingDTO bookingDTO) {
+    public Booking create(@Validated @RequestBody BookingDTO bookingDTO) {
         return bookingService.create(bookingDTO);
     }
 
     @PutMapping("/booking/{id}")
-    public Booking update(@PathVariable Long id, @RequestBody BookingDTO bookingDTO) {
+    public Booking update(@PathVariable Long id, @Validated @RequestBody BookingDTO bookingDTO) {
         return bookingService.update(id, bookingDTO);
     }
 

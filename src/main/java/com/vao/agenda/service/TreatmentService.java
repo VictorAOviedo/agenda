@@ -2,6 +2,7 @@ package com.vao.agenda.service;
 
 import com.vao.agenda.dto.TreatmentDTO;
 import com.vao.agenda.entity.Treatment;
+import com.vao.agenda.exception.NotFoundException;
 import com.vao.agenda.exception.ResourceNotFoudException;
 import com.vao.agenda.repository.ITreatmentRepository;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class TreatmentService {
     public Treatment findById(Integer id) {
         return iTreatmentRepository
                 .findById(Long.valueOf(id))
-                .orElseThrow(() -> new ResourceNotFoudException());
+                .orElseThrow(() -> new NotFoundException("ID Tratamiento no encontrado"));
     }
 
     public Treatment create(TreatmentDTO treatmentDTO){
@@ -48,7 +49,7 @@ public class TreatmentService {
     public void delete (Integer id){
         Treatment treatmentFromDB = iTreatmentRepository
                 .findById(Long.valueOf(id))
-                .orElse(null);
+                .orElseThrow(() -> new NotFoundException("ID Tratamiento no encontrado"));
 
         iTreatmentRepository.delete(treatmentFromDB);
     }

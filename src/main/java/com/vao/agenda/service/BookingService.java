@@ -5,7 +5,9 @@ import com.vao.agenda.entity.Place;
 import com.vao.agenda.entity.Patient;
 import com.vao.agenda.entity.Booking;
 import com.vao.agenda.entity.Treatment;
-import com.vao.agenda.exception.ResourceNotFoudException;
+import com.vao.agenda.exception.InvalidDateException;
+import com.vao.agenda.exception.OutOfTimeRangeException;
+import com.vao.agenda.exception.NotFoundException;
 import com.vao.agenda.repository.IPatientRepository;
 import com.vao.agenda.repository.IPlaceRepository;
 import com.vao.agenda.repository.IBookingRepository;
@@ -16,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.DayOfWeek;
@@ -28,7 +27,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -57,16 +55,22 @@ public class BookingService {
     public Booking findById(Integer id) {
         return iBookingRepository
                 .findById(Long.valueOf(id))
-                .orElseThrow(() -> new ResourceNotFoudException());
+                .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
     }
 
-    public BookingDTO getSchedules(String localName, String treatmentName) {
+    public BookingDTO getSchedules(String placeName, String treatmentName) {
         Treatment treatmentSelected = iTreatmentRepository.findByName(treatmentName);
-        Place placeSelected = iPlaceRepository.findByName(localName);
-
-        if (treatmentSelected == null || placeSelected == null) {
-            return new BookingDTO(localName, treatmentName, Collections.emptyList(), null);
+        if (treatmentSelected == null) {
+            throw new NotFoundException("Tratamiento no encontrado");
         }
+        Place placeSelected = iPlaceRepository.findByName(placeName);
+        if (placeSelected == null) {
+            throw new NotFoundException("Lugar no encontrado");
+        }
+
+//        if (treatmentSelected == null || placeSelected == null) {
+//            return new BookingDTO(placeName, treatmentName, Collections.emptyList(), null);
+//        }
 
         List<DayOfWeek> availableDays = placeSelected.getAvailableDays();
         List<String> availableSchedules = new ArrayList<>();
@@ -89,7 +93,7 @@ public class BookingService {
             currentDate = currentDate.plusDays(1);
         }
 
-        return new BookingDTO(localName, treatmentName, availableSchedules, null);
+        return new BookingDTO(placeName, treatmentName, availableSchedules, null);
     }
 
 
@@ -99,24 +103,44 @@ public class BookingService {
         return place.getAvailableDays().contains(dayOfWeek);
     }
 
+    // Verifica que el rango de hora y fecha este permitido
+    private boolean isWithinValidTimeRange(LocalDateTime dateTime) {
+        LocalDate currentDate = LocalDate.now().plusDays(1); // desde el día de consulta + 1 (desde mañana)
+        LocalDate endDate = LocalDate.now().plusMonths(3); // desde el día de consulta hasta 3 meses
+        LocalTime startTime = LocalTime.of(9, 0); // horario de inicio
+        LocalTime endTime = LocalTime.of(19, 0); // horario de fin
+
+        return (dateTime.toLocalDate().isAfter(currentDate.minusDays(1)) && dateTime.toLocalDate().isBefore(endDate.plusDays(1))) &&
+                (dateTime.toLocalTime().isAfter(startTime.minusSeconds(1)) && dateTime.toLocalTime().isBefore(endTime.plusSeconds(1)));
+    }
+
 
     @Transactional
     public Booking create(BookingDTO bookingDTO) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
         LocalDateTime dateTime = LocalDateTime.parse(bookingDTO.getDateHour().get(0), formatter);
 
+//        Place place = iPlaceRepository.findByName(bookingDTO.getPlace());
+//        Treatment treatment = iTreatmentRepository.findByName(bookingDTO.getTreatment());
         Place place = iPlaceRepository.findByName(bookingDTO.getPlace());
-        Treatment treatment = iTreatmentRepository.findByName(bookingDTO.getTreatment());
-        Patient patient = iPatientRepository.findById(bookingDTO.getPatientId())
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
-
-        if (!isDateTimeValidForLocal(place, dateTime)) {
-            throw new RuntimeException("La fecha no es valida para los días disponibles del local");
+        if (place == null) {
+            throw new NotFoundException("Lugar no encontrado");
         }
 
-        BookingDTO schedules = getSchedules(bookingDTO.getPlace(), bookingDTO.getTreatment());
-        if (!schedules.getDateHour().contains(bookingDTO.getDateHour().get(0))) {
-            throw new RuntimeException("El horario no está disponible para la reserva.");
+        Treatment treatment = iTreatmentRepository.findByName(bookingDTO.getTreatment());
+        if (treatment == null) {
+            throw new NotFoundException("Tipo de Tratamiento no encontrado");
+        }
+
+        Patient patient = iPatientRepository.findById(bookingDTO.getPatientId())
+                .orElseThrow(() -> new NotFoundException("Paciente no encontrado"));
+
+        if (!isDateTimeValidForLocal(place, dateTime)) {
+            throw new InvalidDateException("La fecha no es valida para los días disponibles del local");
+        }
+
+        if (!isWithinValidTimeRange(dateTime)) {
+            throw new OutOfTimeRangeException("La fecha y hora están fuera del rango permitido");
         }
 
         Booking booking = new Booking();
@@ -134,20 +158,27 @@ public class BookingService {
         LocalDateTime dateTime = LocalDateTime.parse(bookingDTO.getDateHour().get(0), formatter);
 
         Booking booking = iBookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+                .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
 
         Place place = iPlaceRepository.findByName(bookingDTO.getPlace());
-        Treatment treatment = iTreatmentRepository.findByName(bookingDTO.getTreatment());
-        Patient patient = iPatientRepository.findById(bookingDTO.getPatientId())
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
-
-        if (!isDateTimeValidForLocal(place, dateTime)) {
-            throw new RuntimeException("La fecha no es válida para los días disponibles del local");
+        if (place == null) {
+            throw new NotFoundException("Lugar no encontrado");
         }
 
-        BookingDTO schedules = getSchedules(bookingDTO.getPlace(), bookingDTO.getTreatment());
-        if (!schedules.getDateHour().contains(bookingDTO.getDateHour().get(0))) {
-            throw new RuntimeException("El horario no está disponible para la reserva.");
+        Treatment treatment = iTreatmentRepository.findByName(bookingDTO.getTreatment());
+        if (treatment == null) {
+            throw new NotFoundException("Tipo de Tratamiento no encontrado");
+        }
+
+        Patient patient = iPatientRepository.findById(bookingDTO.getPatientId())
+                .orElseThrow(() -> new NotFoundException("Paciente no encontrado"));
+
+        if (!isDateTimeValidForLocal(place, dateTime)) {
+            throw new InvalidDateException("La fecha no es válida para los días disponibles del local");
+        }
+
+        if (!isWithinValidTimeRange(dateTime)) {
+            throw new OutOfTimeRangeException("La fecha y hora están fuera del rango permitido");
         }
 
         booking.setPlace(bookingDTO.getPlace());
@@ -160,7 +191,7 @@ public class BookingService {
 
     public void delete(Long id) {
         Booking booking = iBookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+                .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
         iBookingRepository.delete(booking);
     }
 
