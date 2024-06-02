@@ -1,1 +1,0 @@
-Reserva{id=1, lugar='LOCAL 2', tratamiento='ortodoncia', fecha y hora=2024-06-03T17:00', paciente= {id=1, nombre='Oviedo Victor', telefono='351 6715554'}}

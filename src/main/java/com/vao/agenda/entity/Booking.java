@@ -40,7 +40,14 @@ public class Booking implements Serializable {
         this.patient = patient;
     }
 
-    // Getters y Setters
+    // Constructor para DataLoader
+    public Booking( @NonNull String place, @NonNull String treatment, @NonNull LocalDateTime dateHour, Patient patient) {
+        this.place = place;
+        this.treatment = treatment;
+        this.dateHour = dateHour;
+        this.patient = patient;
+    }
+
 
     public Long getId() {
         return id;
