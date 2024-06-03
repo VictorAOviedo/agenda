@@ -93,9 +93,9 @@ public class DataLoader implements CommandLineRunner {
 
             // Crear bookings
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
-            LocalDateTime dateTime1 = LocalDateTime.parse("lunes, 2024-06-03 12:00", formatter);
-            LocalDateTime dateTime2 = LocalDateTime.parse("lunes, 2024-06-10 10:00", formatter);
-            LocalDateTime dateTime3 = LocalDateTime.parse("martes, 2024-06-11 11:00", formatter);
+            LocalDateTime dateTime1 = LocalDateTime.parse("lunes, 2024-06-24 12:00", formatter);
+            LocalDateTime dateTime2 = LocalDateTime.parse("lunes, 2024-07-15 10:00", formatter);
+            LocalDateTime dateTime3 = LocalDateTime.parse("martes, 2024-06-25 11:00", formatter);
 
             Booking booking1 = new Booking(local1.getName(), consulta.getName(), dateTime1, patients.get(0));
             Booking booking2 = new Booking(local1.getName(), cirujia.getName(), dateTime2, patients.get(1));

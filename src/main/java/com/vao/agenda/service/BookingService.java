@@ -28,6 +28,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -68,17 +69,18 @@ public class BookingService {
             throw new NotFoundException("Lugar no encontrado");
         }
 
-//        if (treatmentSelected == null || placeSelected == null) {
-//            return new BookingDTO(placeName, treatmentName, Collections.emptyList(), null);
-//        }
-
         List<DayOfWeek> availableDays = placeSelected.getAvailableDays();
         List<String> availableSchedules = new ArrayList<>();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
         int duration = treatmentSelected.getDuration();
 
-        LocalDate currentDate = LocalDate.now().plusDays(1); // desde dia de consulta + 1 (desde mañana)
-        LocalDate endDate = LocalDate.now().plusMonths(3); // desde dia consulta hasta 3 meses
+        LocalDate currentDate = LocalDate.now().plusDays(1); // desde día de consulta + 1 (desde mañana)
+        LocalDate endDate = LocalDate.now().plusMonths(3); // desde día de consulta hasta 3 meses
+
+        List<Booking> existingBookings = iBookingRepository.findAll();
+        List<LocalDateTime> reservedDates = existingBookings.stream()
+                .map(Booking::getDateHour)
+                .collect(Collectors.toList());
 
         while (!currentDate.isAfter(endDate)) {
             if (availableDays.contains(currentDate.getDayOfWeek())) {
@@ -86,7 +88,19 @@ public class BookingService {
                 LocalDateTime endTime = currentDate.atTime(19, 0); // horario hasta las 19hs
 
                 while (startTime.plusMinutes(duration).isBefore(endTime)) {
-                    availableSchedules.add(startTime.format(dateTimeFormatter));
+                    boolean isReserved = false;
+                    for (Booking booking : existingBookings) {
+                        Treatment bookedTreatment = iTreatmentRepository.findByName(booking.getTreatment());
+                        LocalDateTime bookedStart = booking.getDateHour();
+                        LocalDateTime bookedEnd = bookedStart.plusMinutes(bookedTreatment.getDuration());
+                        if (startTime.isBefore(bookedEnd) && startTime.plusMinutes(duration).isAfter(bookedStart)) {
+                            isReserved = true;
+                            break;
+                        }
+                    }
+                    if (!isReserved) {
+                        availableSchedules.add(startTime.format(dateTimeFormatter));
+                    }
                     startTime = startTime.plusMinutes(duration);
                 }
             }
@@ -114,14 +128,33 @@ public class BookingService {
                 (dateTime.toLocalTime().isAfter(startTime.minusSeconds(1)) && dateTime.toLocalTime().isBefore(endTime.plusSeconds(1)));
     }
 
+    // Verifica superposicion de reservas
+    private void validateBookingOverlap(LocalDateTime dateTime, int duration, Long excludeBookingId) {
+        List<Booking> existingBookings = iBookingRepository.findAll();
+
+        for (Booking booking : existingBookings) {
+            if (excludeBookingId != null && booking.getId().equals(excludeBookingId)) {
+                continue; // Saltar la reserva actualizada. Esto evita que la reserva se solape consigo misma durante la actualizacion
+            }
+
+            Treatment bookedTreatment = iTreatmentRepository.findByName(booking.getTreatment());
+            LocalDateTime bookedStart = booking.getDateHour();
+            LocalDateTime bookedEnd = bookedStart.plusMinutes(bookedTreatment.getDuration());
+
+            LocalDateTime newEnd = dateTime.plusMinutes(duration);
+            if (dateTime.isBefore(bookedEnd) && newEnd.isAfter(bookedStart)) {
+                throw new InvalidDateException("La fecha y hora están solapadas con otra reserva existente");
+            }
+        }
+    }
+
 
     @Transactional
     public Booking create(BookingDTO bookingDTO) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, yyyy-MM-dd HH:mm");
         LocalDateTime dateTime = LocalDateTime.parse(bookingDTO.getDateHour().get(0), formatter);
 
-//        Place place = iPlaceRepository.findByName(bookingDTO.getPlace());
-//        Treatment treatment = iTreatmentRepository.findByName(bookingDTO.getTreatment());
+
         Place place = iPlaceRepository.findByName(bookingDTO.getPlace());
         if (place == null) {
             throw new NotFoundException("Lugar no encontrado");
@@ -142,6 +175,8 @@ public class BookingService {
         if (!isWithinValidTimeRange(dateTime)) {
             throw new OutOfTimeRangeException("La fecha y hora están fuera del rango permitido");
         }
+
+        validateBookingOverlap(dateTime, treatment.getDuration(), null);
 
         Booking booking = new Booking();
         booking.setPlace(bookingDTO.getPlace());
@@ -180,6 +215,8 @@ public class BookingService {
         if (!isWithinValidTimeRange(dateTime)) {
             throw new OutOfTimeRangeException("La fecha y hora están fuera del rango permitido");
         }
+
+        validateBookingOverlap(dateTime, treatment.getDuration(), id);
 
         booking.setPlace(bookingDTO.getPlace());
         booking.setTreatment(bookingDTO.getTreatment());
